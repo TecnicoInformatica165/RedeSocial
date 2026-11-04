@@ -21,13 +21,10 @@ if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/status", () =>
+app.MapGet("/status", () => Results.Ok(new
 {
-    return Results.Ok(new
-    {
-        Status = "online"
-    });
-});
+    Status = "online"
+}));
 
 // Criação de usuário
 app.MapPost("/usuario", async (CadastroUsuarioDto body, UsuarioServicos usuarioServicos) =>
@@ -51,11 +48,10 @@ app.MapPost("/login", async (LoginUsuarioDto body, UsuarioServicos usuarioServic
     {
         var usuarioEncontrado = await usuarioServicos
             .BuscarPorEmailAsync(body.Email);
-        
-        if (usuarioEncontrado.HashSenha != body.Senha)
-            return Results.BadRequest("Usuario ou senha estão errados!");
-        
-        return Results.Ok();
+
+        return usuarioEncontrado.HashSenha != body.Senha
+            ? Results.BadRequest("Usuario ou senha estão errados!")
+            : Results.Ok();
     }
     catch (UsuarioNaoEncontradoException ex)
     {

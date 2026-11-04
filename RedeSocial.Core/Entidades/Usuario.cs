@@ -5,6 +5,11 @@ namespace RedeSocial.Core.Entidades;
 
 public class Usuario
 {
+    // Propriedades constantes - Usadas para que os códigos fora deste arquivo conheçam o limite de informações importantes
+    public const int MINIMO_TAMANHO_NOME = 3;
+
+    public const int MINIMO_TAMANHO_SENHA = 8;
+
     // Construtor protegido - Para o EFCore
     protected Usuario() // Necessário e utilizado pelo EFCore
     {
@@ -18,15 +23,12 @@ public class Usuario
         ValidarEmail(email);
         ValidarSenha(senha);
     }
-    
-    // Propriedades constantes - Usadas para que os códigos fora deste arquivo conheçam o limite de informações importantes
-    public const int MINIMO_TAMANHO_NOME = 3;
-    public const int MINIMO_TAMANHO_SENHA = 8;
 
     // Inicio da criação de PROPRIEDADES da classe
     public int Id { get; private set; }
     public string Nome { get; private set; }
     public string Email { get; private set; }
+
     public string HashSenha { get; private set; }
     // Fim da criação de PROPRIEDADES da classe
 

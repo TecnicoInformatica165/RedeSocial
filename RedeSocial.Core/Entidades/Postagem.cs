@@ -6,7 +6,6 @@ public class Postagem
 {
     protected Postagem()
     {
-        
     }
 
     public Postagem(string conteudo, Usuario usuario)
@@ -16,15 +15,16 @@ public class Postagem
         UsuarioId = usuario.Id;
         PostadoEm = DateTime.UtcNow;
     }
-    
+
     public int Id { get; private set; }
-    public string Conteudo { get; private set; }
+    public string Conteudo { get; private set; } = string.Empty;
     public DateTime PostadoEm { get; private set; }
-    
+
     // Fazer referencia de usuario dentro das postagem
     public int UsuarioId { get; private set; }
+
     // Propriedade de navegação
-    public Usuario Usuario { get; private set; }
+    public Usuario Usuario { get; private set; } = null!;
 
     private void ValidarConteudo(string conteudo)
     {

@@ -10,7 +10,7 @@ public class PostagemTests
     {
         // Arrange
         var usuario = new Usuario("Gabriel", "gabriel@email.com", "gabriel123");
-        
+
         // Act 
         var postagemCriada = new Postagem("asgsagasg", usuario);
     }

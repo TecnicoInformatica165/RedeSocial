@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RedeSocial.Core\RedeSocial.Core.csproj" />
+        <ProjectReference Include="..\RedeSocial.Core\RedeSocial.Core.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -20,8 +20,10 @@ public sealed class UsuarioTests
 
         // Assert - Afirmação do que deveria acontecer
         Assert.IsNotNull(usuarioCriado); // Meu usuario não é nulo
-        Assert.AreEqual(nomeEsperado, usuarioCriado.Nome); // Se o nome que eu atribui ao objeto está definitivamente dentro dele
-        Assert.AreEqual(emailEsperado, usuarioCriado.Email); // Se o email que eu atribui ao objeto está definitivamente dentro dele
+        Assert.AreEqual(nomeEsperado,
+            usuarioCriado.Nome); // Se o nome que eu atribui ao objeto está definitivamente dentro dele
+        Assert.AreEqual(emailEsperado,
+            usuarioCriado.Email); // Se o email que eu atribui ao objeto está definitivamente dentro dele
     }
 
     // Caminho Infeliz
@@ -34,10 +36,7 @@ public sealed class UsuarioTests
         const string senha = "gabriel123";
 
         // Act&Assert - Ação a ser executada dentro da afirmação
-        var exception = Assert.Throws<CoreException>(() =>
-        {
-            new Usuario(nomeEsperado!, emailEsperado, senha);
-        });
+        var exception = Assert.Throws<CoreException>(() => { new Usuario(nomeEsperado!, emailEsperado, senha); });
 
         // Assert
         Assert.Contains("O nome do usuário não pode ser nulo ou estar vazio!", exception.Message);
