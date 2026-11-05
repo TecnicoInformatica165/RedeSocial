@@ -15,6 +15,8 @@ builder.Services.AddMySql<DbContexto>(stringConexao, ServerVersion.AutoDetect(st
 // Cadastro de Servicos Customizados
 builder.Services.AddScoped<UsuarioServicos>();
 
+// Cadastro de JWT
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment()) app.MapOpenApi();
@@ -49,9 +51,12 @@ app.MapPost("/login", async (LoginUsuarioDto body, UsuarioServicos usuarioServic
         var usuarioEncontrado = await usuarioServicos
             .BuscarPorEmailAsync(body.Email);
 
-        return usuarioEncontrado.HashSenha != body.Senha
-            ? Results.BadRequest("Usuario ou senha estão errados!")
-            : Results.Ok();
+        if (usuarioEncontrado.HashSenha != body.Senha)
+            return Results.BadRequest("Usuario ou senha estão errados!");
+
+        var token = TokenServicos.GerarToken(usuarioEncontrado);
+        
+        return Results.Ok(new { Token = token });
     }
     catch (UsuarioNaoEncontradoException ex)
     {
