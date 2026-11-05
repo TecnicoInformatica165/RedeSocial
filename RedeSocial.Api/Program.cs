@@ -68,4 +68,6 @@ app.MapPost("/login", async (LoginUsuarioDto body, UsuarioServicos usuarioServic
     }
 });
 
+
+
 app.Run();

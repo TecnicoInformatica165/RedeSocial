@@ -28,8 +28,9 @@ public class Usuario
     public int Id { get; private set; }
     public string Nome { get; private set; }
     public string Email { get; private set; }
-
     public string HashSenha { get; private set; }
+    public ICollection<Postagem> Postagens { get; private set; }
+
     // Fim da criação de PROPRIEDADES da classe
 
     private void ValidarSenha(string senha)
