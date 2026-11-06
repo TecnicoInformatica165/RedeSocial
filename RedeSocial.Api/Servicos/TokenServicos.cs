@@ -36,7 +36,10 @@ public class TokenServicos
             ]),
             Audience = Audiencia,
             Issuer = Emissor,
-            Expires = DateTime.UtcNow.AddHours(2)
+            Expires = DateTime.UtcNow.AddHours(2),
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(chaveBytes),
+                SecurityAlgorithms.HmacSha256Signature)
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);

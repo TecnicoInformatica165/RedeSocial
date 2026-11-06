@@ -1,4 +1,8 @@
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RedeSocial.Api.Dados;
 using RedeSocial.Api.DTOs;
 using RedeSocial.Api.Servicos;
@@ -14,14 +18,39 @@ builder.Services.AddMySql<DbContexto>(stringConexao, ServerVersion.AutoDetect(st
 
 // Cadastro de Servicos Customizados
 builder.Services.AddScoped<UsuarioServicos>();
+builder.Services.AddScoped<PostagemServicos>();
 
 // Cadastro de JWT
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TokenServicos.Chave)),
+            ValidateIssuer = false,
+            ValidIssuer = TokenServicos.Emissor,
+            ValidateAudience = false,
+            ValidAudience = TokenServicos.Audiencia,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment()) app.MapOpenApi();
+else app.UseHttpsRedirection();
 
-app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGet("/status", () => Results.Ok(new
 {
@@ -55,7 +84,7 @@ app.MapPost("/login", async (LoginUsuarioDto body, UsuarioServicos usuarioServic
             return Results.BadRequest("Usuario ou senha estão errados!");
 
         var token = TokenServicos.GerarToken(usuarioEncontrado);
-        
+
         return Results.Ok(new { Token = token });
     }
     catch (UsuarioNaoEncontradoException ex)
@@ -68,6 +97,27 @@ app.MapPost("/login", async (LoginUsuarioDto body, UsuarioServicos usuarioServic
     }
 });
 
+app.MapPost("/postagem",
+    async (CriaPostagemDto body, ClaimsPrincipal usuario, UsuarioServicos usuarioServicos,
+        PostagemServicos postagemServicos) =>
+    {
+        try
+        {
+            if (int.TryParse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var idUsuario))
+                return Results.Unauthorized();
 
+            var usuarioEncontrado = await usuarioServicos.BuscarPorIdAsync(idUsuario);
+
+            var novaPostagem = new Postagem(body.Conteudo, usuarioEncontrado);
+
+            await postagemServicos.AdicionaAsync(novaPostagem);
+
+            return Results.Created();
+        }
+        catch (CoreException ex)
+        {
+            return Results.BadRequest(new { Mensagem = ex.Message });
+        }
+    }).RequireAuthorization();
 
 app.Run();

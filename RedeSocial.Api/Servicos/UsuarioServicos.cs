@@ -22,4 +22,11 @@ public class UsuarioServicos(DbContexto contexto)
 
         return usuarioEncontrado ?? throw new UsuarioNaoEncontradoException("O usuario não existe!");
     }
+
+    public async Task<Usuario> BuscarPorIdAsync(int idUsuario)
+    {
+        var usuarioEncontrado = await contexto.Usuarios.FindAsync(idUsuario);
+
+        return usuarioEncontrado ?? throw new UsuarioNaoEncontradoException("O usuario não existe!");
+    }
 }
